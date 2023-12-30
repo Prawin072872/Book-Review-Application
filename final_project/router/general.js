@@ -10,16 +10,37 @@ public_users.post("/register", (req,res) => {
   return res.status(300).json({message: "Yet to be implemented"});
 });
 
+function getBooks(){
+    return new Promise((resolve,reject) => {
+        resolve(books)
+    })
+}
+
+
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+  getBooks().then((books) => res.send(JSON.stringify(books)));
 });
+
+function getByISBN(isbn){
+    return new Promise((resolve,reject) => {
+        let isbnNum = parseInt(isbn)
+        if(books[isbnNum]){
+            resolve(books[isbnNum])
+        }else{
+            reject({status: 404,message: `ISBN ${isbn} not Found`})
+        }
+    })
+}
 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+    getByISBN(req.params.isbn)
+    .then(
+        result => res.send(result),
+        error => res.status(error.status).json({message: error.message})
+    )
  });
   
 // Get book details based on author
